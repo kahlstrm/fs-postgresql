@@ -7,6 +7,7 @@ class Blog extends Model {
   declare title: string;
   declare url: string;
   declare likes: number;
+  declare userId: number;
 }
 Blog.init(
   {

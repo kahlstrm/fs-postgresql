@@ -1,9 +1,13 @@
+import { env } from 'process';
+
 require('dotenv').config();
 
-if (!process.env.DATABASE_URL) {
-  throw new Error('DATABASE_URL env variable not set');
+if (!env.DATABASE_URL || !env.SECRET) {
+  throw new Error(
+    'env variables not set, required variables:\nSECRET\nDATABASE_URL'
+  );
 }
 
-export const DATABASE_URL = process.env.DATABASE_URL;
-
-export const PORT = process.env.PORT || 3001;
+export const DATABASE_URL = env.DATABASE_URL;
+export const SECRET = env.SECRET;
+export const PORT = env.PORT || 3001;
