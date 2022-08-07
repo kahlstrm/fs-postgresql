@@ -9,7 +9,7 @@ interface CustomReq extends Request {
 
 const blogMiddleware = async (
   req: CustomReq,
-  res: Response,
+  _: Response,
   next: NextFunction
 ) => {
   const blog = await Blog.findByPk(req.params.id);
@@ -19,7 +19,7 @@ const blogMiddleware = async (
   req.blog = blog;
   next();
 };
-router.get('/', async (req, res) => {
+router.get('/', async (_, res) => {
   const blogs = await Blog.findAll();
   res.json(blogs);
 });
@@ -29,14 +29,14 @@ router.post('/', async (req, res) => {
   res.json(blog);
 });
 
-router.get('/:id', blogMiddleware, async (req: CustomReq, res) => {
+router.get('/:id', blogMiddleware, (req: CustomReq, res) => {
   res.json(req.blog);
 });
 router.delete('/:id', blogMiddleware, async (req: CustomReq, res) => {
   await req.blog?.destroy();
   res.json(req.blog);
 });
-router.put('/:id', blogMiddleware, async (req: CustomReq, res, next) => {
+router.put('/:id', blogMiddleware, async (req: CustomReq, res) => {
   if (!req.body.likes) {
     throw Error('property likes missing from body');
   }
