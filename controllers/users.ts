@@ -40,6 +40,9 @@ interface ReqWithToken extends Request {
 }
 router.put('/:username', tokenExtractor, async (req: ReqWithToken, res) => {
   const user = await User.findOne({
+    attributes:{
+      exclude:['password']
+    },
     where: {
       username: req.params.username,
     },
