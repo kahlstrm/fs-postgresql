@@ -6,6 +6,7 @@ import { connectToDb } from './util/db';
 import blogRouter from './controllers/blogs';
 import userRouter from './controllers/users';
 import loginRouter from './controllers/login';
+import authorRouter from './controllers/authors';
 const app = express();
 
 app.use(express.json());
@@ -13,6 +14,7 @@ app.use(express.json());
 app.use('/api/blogs', blogRouter);
 app.use('/api/users', userRouter);
 app.use('/api/login', loginRouter);
+app.use('/api/authors', authorRouter);
 app.use(errorHandler);
 const start = async () => {
   await connectToDb();

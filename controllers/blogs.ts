@@ -10,6 +10,7 @@ import jwt from 'jsonwebtoken';
 import { SECRET } from '../util/config';
 import { UserToken } from '../types';
 import { tokenParser } from '../util/validation';
+import { Op, WhereOptions } from 'sequelize';
 const router = Router();
 
 interface CustomReq extends Request {
@@ -38,13 +39,33 @@ const blogMiddleware = async (
   req.blog = blog;
   next();
 };
-router.get('/', async (_, res) => {
+
+router.get('/', async (req, res) => {
+  let where: WhereOptions = {};
+  if (req.query.serch) {
+    where = {
+      [Op.or]: [
+        {
+          title: {
+            [Op.iLike]: '%' + req.query.serch + '%',
+          },
+        },
+        {
+          author: {
+            [Op.iLike]: '%' + req.query.serch + '%',
+          },
+        },
+      ],
+    };
+  }
   const blogs = await Blog.findAll({
     attributes: { exclude: ['userId'] },
     include: {
       model: User,
       attributes: ['name'],
     },
+    where,
+    order: [['likes', 'DESC']],
   });
   res.json(blogs);
 });
