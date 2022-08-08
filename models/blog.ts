@@ -8,6 +8,7 @@ class Blog extends Model {
   declare url: string;
   declare likes: number;
   declare userId: number;
+  declare year: number;
 }
 Blog.init(
   {
@@ -31,11 +32,21 @@ Blog.init(
       type: DataTypes.INTEGER,
       defaultValue: 0,
     },
+    year: {
+      type: DataTypes.INTEGER,
+      validate: {
+        min: 1991,
+        maxYear(value: any) {
+          if (parseInt(value) > new Date().getFullYear()) {
+            throw Error('year cannot be in the future');
+          }
+        },
+      },
+    },
   },
   {
     sequelize,
     underscored: true,
-    timestamps: false,
     modelName: 'blog',
   }
 );
