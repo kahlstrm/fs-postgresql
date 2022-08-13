@@ -17,11 +17,25 @@ interface CustomReq extends Request {
   blog?: Blog;
   decodedToken?: UserToken;
 }
-export const tokenExtractor: RequestHandler = (req: CustomReq, _, next) => {
+export const tokenExtractor: RequestHandler = async (
+  req: CustomReq,
+  _,
+  next
+) => {
   const auth = req.get('authorization');
   if (auth && auth.toLowerCase().startsWith('bearer ')) {
-    console.log(auth.substring(7));
-    req.decodedToken = tokenParser.parse(jwt.verify(auth.substring(7), SECRET));
+    const parsed = tokenParser.parse(jwt.verify(auth.substring(7), SECRET));
+    const user = await User.findByPk(parsed.id, {
+      attributes: ['id', 'sessions', 'disabled'],
+    });
+    if (!user || !user.sessions.includes(auth.substring(7))) {
+      throw Error('invalid token');
+    }
+    if (user.disabled) {
+      await user.update({ sessions: [] });
+      throw Error('account disabled, contact admin');
+    }
+    req.decodedToken = parsed;
   } else {
     throw Error('token missing');
   }

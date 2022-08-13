@@ -6,7 +6,9 @@ class User extends Model {
   declare id: number;
   declare username: string;
   declare name: string;
-  declare password: string;
+  declare password?: string;
+  declare disabled: boolean;
+  declare sessions: string[];
 }
 
 User.init(
@@ -32,11 +34,24 @@ User.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    disabled: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    sessions: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      defaultValue: [],
+    },
   },
   {
     sequelize,
     underscored: true,
     modelName: 'user',
+    defaultScope: {
+      attributes: {
+        exclude: ['password'],
+      },
+    },
   }
 );
 

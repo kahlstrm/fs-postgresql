@@ -1,15 +1,16 @@
-import { Request, Router } from 'express';
+import { Router } from 'express';
 import bcrypt from 'bcrypt';
 const router = Router();
 
 import { Blog, User } from '../models';
 import { createUserRequest, tokenParser } from '../util/validation';
 import { tokenExtractor } from './blogs';
-import { UserToken } from '../types';
+import { ReqWithToken } from '../types';
+import { WhereOptions } from 'sequelize';
 
 router.get('/', async (_, res) => {
   const users = await User.findAll({
-    attributes: { exclude: ['id', 'password'] },
+    attributes: { exclude: ['id'] },
     include: {
       model: Blog,
       attributes: { exclude: ['userId'] },
@@ -28,21 +29,36 @@ router.post('/', async (req, res) => {
   res.json({ ...created.toJSON(), password: undefined });
 });
 router.get('/:id', async (req, res) => {
-  const user = await User.findByPk(req.params.id);
+  let where: WhereOptions = {};
+  if (req.query.read !== undefined) {
+    where = {
+      read: req.query.read,
+    };
+  }
+  const user = await User.findByPk(req.params.id, {
+    include: [
+      {
+        model: Blog,
+        as: 'readings',
+        through: {
+          attributes: ['read', 'id'],
+          where,
+        },
+        attributes: {
+          exclude: ['createdAt', 'updatedAt', 'userId'],
+        },
+      },
+    ],
+  });
   if (user) {
     res.json(user);
   } else {
     res.status(404).end();
   }
 });
-interface ReqWithToken extends Request {
-  decodedToken?: UserToken;
-}
+
 router.put('/:username', tokenExtractor, async (req: ReqWithToken, res) => {
   const user = await User.findOne({
-    attributes:{
-      exclude:['password']
-    },
     where: {
       username: req.params.username,
     },
