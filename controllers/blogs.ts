@@ -5,7 +5,7 @@ import {
   NextFunction,
   RequestHandler,
 } from 'express';
-import { Blog, User } from '../models';
+import { Blog, User, ReadingList } from '../models';
 import jwt from 'jsonwebtoken';
 import { SECRET } from '../util/config';
 import { UserToken } from '../types';
@@ -105,10 +105,14 @@ router.delete(
   blogMiddleware,
   tokenExtractor,
   async (req: CustomReq, res) => {
-    console.log(req.blog);
+    console.log(req.blog?.toJSON());
     console.log(req.decodedToken);
-
     if (req.blog?.userId === req.decodedToken?.id) {
+      await ReadingList.destroy({
+        where: {
+          blogId: req.blog?.id,
+        },
+      });
       await req.blog?.destroy();
       res.json(req.blog);
     } else {
