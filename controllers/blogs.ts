@@ -9,7 +9,7 @@ import { Blog, User } from '../models';
 import jwt from 'jsonwebtoken';
 import { SECRET } from '../util/config';
 import { UserToken } from '../types';
-import { tokenParser } from '../util/validation';
+import { blogCommentParser, tokenParser } from '../util/validation';
 import { Op, WhereOptions } from 'sequelize';
 const router = Router();
 
@@ -124,6 +124,14 @@ router.put('/:id', blogMiddleware, async (req: CustomReq, res) => {
   req.blog!.likes = req.body.likes;
   const updated = await req.blog!.save();
   res.json(updated);
+});
+router.post('/:id/comments', blogMiddleware, async (req: CustomReq, res) => {
+  const body = blogCommentParser.parse(req.body);
+  const test = await req.blog?.update({
+    comments: [...req.blog.comments, body.comment],
+  });
+  console.log(test);
+  res.json(test?.toJSON());
 });
 
 export default router;

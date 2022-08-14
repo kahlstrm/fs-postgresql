@@ -9,6 +9,7 @@ class Blog extends Model {
   declare likes: number;
   declare userId: number;
   declare year: number;
+  declare comments:string[];
 }
 Blog.init(
   {
@@ -43,6 +44,10 @@ Blog.init(
         },
       },
     },
+    comments:{
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      defaultValue: [],
+    }
   },
   {
     sequelize,

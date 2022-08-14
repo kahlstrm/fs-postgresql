@@ -15,3 +15,4 @@ export const readingListParser = z.object({
   user_id: z.number(),
 });
 export const readUpdateParser = z.object({ read: z.boolean() });
+export const blogCommentParser = z.object({ comment: z.string().max(255) });

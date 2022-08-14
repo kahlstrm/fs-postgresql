@@ -16,7 +16,7 @@ router.post('/', async (req, res) => {
       username: body.username,
     },
     attributes: {
-      include: ['password'],
+      include: ['password','sessions'],
     },
   });
   const passwordCorrect = user?.password

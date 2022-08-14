@@ -10,7 +10,6 @@ import { WhereOptions } from 'sequelize';
 
 router.get('/', async (_, res) => {
   const users = await User.findAll({
-    attributes: { exclude: ['id'] },
     include: {
       model: Blog,
       attributes: { exclude: ['userId'] },

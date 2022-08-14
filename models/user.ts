@@ -49,7 +49,7 @@ User.init(
     modelName: 'user',
     defaultScope: {
       attributes: {
-        exclude: ['password'],
+        exclude: ['password','sessions'],
       },
     },
   }
