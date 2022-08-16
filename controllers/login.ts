@@ -20,7 +20,7 @@ router.post('/', async (req, res) => {
     },
   });
   const passwordCorrect = user?.password
-    ? bcrypt.compare(body.password, user.password)
+    ? await bcrypt.compare(body.password, user.password)
     : false;
 
   if (!(user && passwordCorrect)) {
